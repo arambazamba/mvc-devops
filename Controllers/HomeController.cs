@@ -26,6 +26,15 @@ namespace mvc_skills.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public IActionResult AddSkill()
+        {
+            Console.WriteLine("adding skill");
+            var sk = new Skill{ID=1, Name="DevOps"};
+            var result = data.AddSkill(sk);
+            return RedirectToAction("Index", "Home", result);
+        }
+
         public IActionResult Privacy()
         {
             return View();
