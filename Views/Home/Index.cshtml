@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Skill>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome to skills</h1>
+    <div>
+        <table class="table tblVoucher table-striped table-bordered table-hover">
+            <colgroup>
+                <col style="width: 10%" />
+                <col style="width: 10%" />
+            </colgroup>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                </tr>
+            </thead>
+            <tbody id="tblVoucherBody">
+                @foreach (var skill in Model)
+                {
+                    <tr style="cursor: pointer">
+                        <td> @skill.ID </td>
+                        <td> @skill.Name</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <button id="btnAdd">Add Skill</button>
+    </div>
+</div>
