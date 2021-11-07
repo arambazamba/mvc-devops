@@ -29,8 +29,7 @@ namespace mvc_skills.Controllers
         [HttpGet]
         public IActionResult AddSkill()
         {
-            Console.WriteLine("adding skill");
-            var sk = new Skill{ID=1, Name="DevOps"};
+            var sk = new Skill{ID=4, Name="Azure Dev"};
             var result = data.AddSkill(sk);
             return RedirectToAction("Index", "Home", result);
         }
