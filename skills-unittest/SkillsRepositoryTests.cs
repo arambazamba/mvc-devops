@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using skills;
 using Xunit;
 
-namespace skills_test
+namespace skillstest
 {
     public class SkillsRepositoryTests
     {

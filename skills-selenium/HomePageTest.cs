@@ -10,7 +10,6 @@ using System.Collections;
 namespace UITests
 {
     [TestFixture("Chrome")]
-    [TestFixture("Firefox")]
     [TestFixture("Edge")]
     public class HomePageTest
     {
@@ -33,11 +32,6 @@ namespace UITests
                   case "Chrome":
                     driver = new ChromeDriver(
                         Environment.GetEnvironmentVariable("ChromeWebDriver")
-                    );
-                    break;
-                  case "Firefox":
-                    driver = new FirefoxDriver(
-                        Environment.GetEnvironmentVariable("GeckoWebDriver")
                     );
                     break;
                   case "Edge":
@@ -103,13 +97,13 @@ namespace UITests
             // Locate the link by its ID and then click the link.
             ClickElement(FindElement(By.Id(linkId)));
 
-            // Locate the resulting modal.
+            // Locate the resulting row.
             IWebElement row = FindElement(By.Id(rowid));
 
-            // Record whether the modal was successfully displayed.
+            // Record whether the row was successfully added and displayed.
             bool rowWasRendered = (row != null && row.Displayed);
 
-            // Assert that the modal was displayed successfully.
+            // Assert that the row was displayed successfully.
             // If it wasn't, this test will be recorded as failed.
             Assert.That(rowWasRendered, Is.True);
         }
