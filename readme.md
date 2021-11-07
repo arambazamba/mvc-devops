@@ -2,4 +2,11 @@
 
 Sample to demonstrate .NET MVC and DevOps
 
-[![Build Status](https://dev.azure.com/integrations-training/MVC%20DevOps/_apis/build/status/Build%20test%20deploy?branchName=master)](https://dev.azure.com/integrations-training/MVC%20DevOps/_build/latest?definitionId=120&branchName=master)
+Scaffolding:
+
+```
+dotnet new mvc -n skills-mvc
+dotnet new xunit -n skills-unittest
+dotnet new mstest -n skills-selenium
+dotnet add package Selenium.WebDriver --version 3.141.0
+```
