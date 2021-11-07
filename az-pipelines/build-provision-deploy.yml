@@ -41,7 +41,7 @@ stages:
           - task: DotNetCoreCLI@2
             inputs:
               command: "test"
-              projects: "skills-test/*.csproj"
+              projects: "skills-unittest/*.csproj"
               arguments: "--configuration $(buildConfiguration)"              
       
       - job: Provision
