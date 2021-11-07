@@ -15,8 +15,8 @@ variables:
   buildConfiguration: Release
   releaseBranchName: master
   azSubscription: az400-mod11-subscription
-  apifolder: FoodApi
-  appservice: foodapi
+  appfolder: skills-mvc
+  appservice: mvc-devops-skills
   envflag: staging
 
 pool:
@@ -32,7 +32,7 @@ stages:
           - template: templates/netcore-build.yaml
             parameters:
               cfg: $(buildConfiguration)
-              folder: $(apifolder)
+              folder: $(appfolder)
 
       - job: Test
         displayName: "Unit Test"

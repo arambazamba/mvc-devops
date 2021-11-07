@@ -2,7 +2,7 @@ rnd=$1
 grp=mvc-devops-$rnd
 loc=westeurope
 appPlan=devopsplan-$rnd
-app=mvc-devops-$rnd
+app=mvc-devops-skills-$rnd
 
 az group create -n $grp -l $loc
 
