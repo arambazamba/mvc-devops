@@ -6,10 +6,12 @@ using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections;
+using System.IO;
+using System.Reflection;
 
 namespace UITests
 {
-    [TestFixture("Chrome")]
+    // [TestFixture("Chrome")]
     [TestFixture("Edge")]
     public class HomePageTest
     {
@@ -30,18 +32,15 @@ namespace UITests
                 switch(browser)
                 {
                   case "Chrome":
-                    driver = new ChromeDriver(
-                        Environment.GetEnvironmentVariable("ChromeWebDriver")
-                    );
+                    // driver = new ChromeDriver(
+                    //     Environment.GetEnvironmentVariable("ChromeWebDriver")
+                    // );
+                    driver = new ChromeDriver(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
                     break;
                   case "Edge":
-                    driver = new EdgeDriver(
-                        Environment.GetEnvironmentVariable("EdgeWebDriver"),
-                        new EdgeOptions
-                        {
-                            UseChromium = true
-                        }
-                    );
+                        var options = new EdgeOptions();
+                        options.UseChromium = true;
+                        driver = new EdgeDriver(options);
                     break;
                   default:
                     throw new ArgumentException($"'{browser}': Unknown browser");
