@@ -43,30 +43,9 @@ stages:
               command: "test"
               projects: "skills-unittest/*.csproj"
               arguments: "--configuration $(buildConfiguration)"              
-      
-      - job: Selenium
-        pool:
-        vmImage: "windows-2022"
 
-        steps:
-        
-        - powershell: |
-            Invoke-WebRequest -Uri "https://chromedriver.storage.googleapis.com/92.0.4515.43/chromedriver_win32.zip" -OutFile $(System.DefaultWorkingDirectory)/chromedriver_win32.zip;
-            Expand-Archive $(System.DefaultWorkingDirectory)/chromedriver_win32.zip -DestinationPath $(System.DefaultWorkingDirectory)/chromedriver_win32;
-            Copy-Item "$(System.DefaultWorkingDirectory)/chromedriver_win32/chromedriver.exe" -Destination "$(System.DefaultWorkingDirectory)/"
-        displayName: 'PowerShell Script'
-
-        - task: DotNetCoreCLI@2
-          displayName: 'running selenium'
-            inputs:
-              command: test
-              projects: '**/dotnetseleniumdemo.dll'
-              arguments: '--no-build'
-              workingDirectory: '$(System.DefaultWorkingDirectory)/_ReactDemoColors-ASP.NET Core-CI/drop'
-
-
-  - stage: Deploy
-    displayName: Deploy
+  - stage: Selenium
+    displayName: Run Selenium Tests
     dependsOn: Build
 
     jobs:
@@ -92,3 +71,30 @@ stages:
                     appType: "webApp"
                     WebAppName: "$(appservice)-$(envflag)"
                     packageForLinux: "$(System.ArtifactsDirectory)/**/*.zip"
+                    
+                
+      - job: RunUITests
+        dependsOn: DeployAppService
+        displayName: 'Run UI tests'
+        pool:
+          vmImage: 'windows-2019'
+        variables:
+        - group: 'Release'
+        steps: 
+        - task: UseDotNet@2
+          displayName: 'Use .NET SDK $(dotnetSdkVersion)'
+          inputs:
+            version: '$(dotnetSdkVersion)'
+        - task: DotNetCoreCLI@2
+          displayName: 'Build the project - $(buildConfiguration)'
+          inputs:
+            command: 'build'
+            arguments: '--configuration $(buildConfiguration)'
+            projects: '$(System.DefaultWorkingDirectory)/**/*skills-selenium.tests.csproj'
+        - task: DotNetCoreCLI@2
+          displayName: 'Run unit tests - $(buildConfiguration)'
+          inputs:
+            command: 'test'
+            arguments: '--no-build --configuration $(buildConfiguration)'
+            publishTestResults: true
+            projects: '$(System.DefaultWorkingDirectory)/**/*skills-selenium.tests.csproj'
