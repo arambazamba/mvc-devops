@@ -1,0 +1,94 @@
+name: api-build-deploy
+
+# trigger:
+#   branches:
+#     include:
+#       - master
+#   paths:
+#     include:
+#       - FoodApi
+
+trigger: none
+
+variables:
+  dotnetSdkVersion: "5.x"
+  buildConfiguration: Release
+  releaseBranchName: master
+  azSubscription: scMVCDevOps
+  appfolder: skills-mvc
+  appservice: mvc-devops-skills
+  envflag: staging
+
+pool:
+  vmImage: "ubuntu-20.04"
+
+stages:
+  - stage: Build
+    displayName: Build and Provision
+    jobs:
+      - job: Build
+
+        steps:
+          - template: templates/netcore-build.yaml
+            parameters:
+              cfg: $(buildConfiguration)
+              folder: $(appfolder)
+
+      - job: Test
+        displayName: "Unit Test"
+
+        steps:
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: "test"
+              projects: "skills-unittest/*.csproj"
+              arguments: "--configuration $(buildConfiguration)"              
+      
+      - job: Selenium
+        pool:
+        vmImage: "windows-2022"
+
+        steps:
+        
+        - powershell: |
+            Invoke-WebRequest -Uri "https://chromedriver.storage.googleapis.com/92.0.4515.43/chromedriver_win32.zip" -OutFile $(System.DefaultWorkingDirectory)/chromedriver_win32.zip;
+            Expand-Archive $(System.DefaultWorkingDirectory)/chromedriver_win32.zip -DestinationPath $(System.DefaultWorkingDirectory)/chromedriver_win32;
+            Copy-Item "$(System.DefaultWorkingDirectory)/chromedriver_win32/chromedriver.exe" -Destination "$(System.DefaultWorkingDirectory)/"
+        displayName: 'PowerShell Script'
+
+        - task: DotNetCoreCLI@2
+          displayName: 'running selenium'
+            inputs:
+              command: test
+              projects: '**/dotnetseleniumdemo.dll'
+              arguments: '--no-build'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/_ReactDemoColors-ASP.NET Core-CI/drop'
+
+
+  - stage: Deploy
+    displayName: Deploy
+    dependsOn: Build
+
+    jobs:
+      - deployment: DeployAppService
+        displayName: Deploy to Appservice
+        environment: $(envflag)
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: DownloadBuildArtifacts@0
+                  inputs:
+                    buildType: "current"
+                    downloadType: "single"
+                    artifactName: "drop"
+                    downloadPath: "$(System.ArtifactsDirectory)"
+
+                - task: AzureRmWebAppDeployment@4
+                  displayName: "Azure App Service Deploy: $(appservice)"
+                  inputs:
+                    ConnectionType: "AzureRM"
+                    azureSubscription: $(azSubscription)
+                    appType: "webApp"
+                    WebAppName: "$(appservice)-$(envflag)"
+                    packageForLinux: "$(System.ArtifactsDirectory)/**/*.zip"
