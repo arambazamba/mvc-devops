@@ -1,0 +1,35 @@
+name: api-build-deploy
+
+# trigger:
+#   branches:
+#     include:
+#       - master
+#   paths:
+#     include:
+#       - skills-mvc
+
+trigger: none
+
+variables:
+  dotnetSdkVersion: "6.x"
+  buildConfiguration: Release
+  releaseBranchName: master
+  azSubscription: scMVCDevOps
+  appfolder: skills-mvc
+  appservice: mvc-devops-skills
+  envflag: staging
+
+pool:
+  vmImage: "ubuntu-20.04"
+
+stages:
+  - stage: Build
+    displayName: Build and Provision
+    jobs:
+      - job: Build
+
+        steps:
+          - template: templates/netcore-build.yaml
+            parameters:
+              cfg: $(buildConfiguration)
+              folder: $(appfolder)
