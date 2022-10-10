@@ -1,0 +1,31 @@
+name: mvc-ci-template
+
+# trigger:
+#   branches:
+#     include:
+#       - master
+#   paths:
+#     include:
+#       - skills-mvc
+
+trigger: none
+
+variables:
+  dotnetSdkVersion: "6.x"
+  buildConfiguration: Release
+  appfolder: skills-mvc
+
+pool:
+  vmImage: "ubuntu-20.04"
+
+stages:
+  - stage: Build
+    displayName: Build and Provision
+    jobs:
+      - job: Build
+
+        steps:
+          - template: templates/netcore-build.yaml
+            parameters:
+              cfg: $(buildConfiguration)
+              folder: $(appfolder)

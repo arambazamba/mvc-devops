@@ -1,4 +1,4 @@
-name: api-build-deploy
+name: mvc-ci-template
 
 # trigger:
 #   branches:
@@ -13,11 +13,7 @@ trigger: none
 variables:
   dotnetSdkVersion: "6.x"
   buildConfiguration: Release
-  releaseBranchName: master
-  azSubscription: scMVCDevOps
   appfolder: skills-mvc
-  appservice: mvc-devops-skills
-  envflag: staging
 
 pool:
   vmImage: "ubuntu-20.04"
@@ -27,9 +23,30 @@ stages:
     displayName: Build and Provision
     jobs:
       - job: Build
-
         steps:
-          - template: templates/netcore-build.yaml
-            parameters:
-              cfg: $(buildConfiguration)
-              folder: $(appfolder)
+            - task: UseDotNet@2
+              displayName: "Use .NET Core SDK $(dotnetSdkVersion)"
+              inputs:
+                version: "$(dotnetSdkVersion)"
+
+            - task: DotNetCoreCLI@2
+              displayName: "Restore project dependencies"
+              inputs:
+                command: "restore"
+                projects: "$(apifolder)/*.csproj"
+
+            - task: DotNetCoreCLI@2
+              displayName: "Build the project - $(buildConfiguration)"
+              inputs:
+                command: "build"
+                arguments: "--no-restore --configuration $(buildConfiguration)"
+                projects: "$(apifolder)/*.csproj"
+
+            - task: DotNetCoreCLI@2
+              displayName: "Publish the project - $(buildConfiguration)"
+              inputs:
+                command: "publish"
+                projects: "$(apifolder)/*.csproj"
+                publishWebProjects: false
+                arguments: "--no-build --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/$(buildConfiguration)"
+                zipAfterPublish: true
