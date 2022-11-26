@@ -7,7 +7,7 @@ name: "test-agent-net"
 trigger: none
 
 pool:
-    name: linux-selfhosted
+    name: win-selfhosted
 
 variables:
   buildConfiguration: "Release"
