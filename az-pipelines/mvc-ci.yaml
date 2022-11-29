@@ -29,7 +29,7 @@ stages:
               inputs:
                 version: "$(dotnetSdkVersion)"
 
-            - task: DotNetCoreCLI
+            - task: DotNetCoreCLI@2
               displayName: "Restore project dependencies"
               inputs:
                 command: "restore"
